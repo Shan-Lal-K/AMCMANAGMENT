@@ -67,7 +67,44 @@ namespace AMCMANAGMENT.Service.AssetCategories
 
         public Task<List<AssetCategory>> GetAll()
         {
-            throw new NotImplementedException();
+            SqlCommand cmd = new SqlCommand("sp_AssetCategory", (SqlConnection)_dbConnection);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@Operation", "GetAll");
+            cmd.Parameters.AddWithValue("@Id", 0);
+            cmd.Parameters.AddWithValue("@CreatedId", "");
+            cmd.Parameters.AddWithValue("@CreatedTime", "");
+            cmd.Parameters.AddWithValue("@DeletedId", "");
+            cmd.Parameters.AddWithValue("@IsDeleted", "");
+            cmd.Parameters.AddWithValue("@DeletedTime", "");
+            cmd.Parameters.AddWithValue("@Name", "");
+            cmd.Parameters.AddWithValue("@NewID", "");
+            _dbConnection.Open();
+            SqlDataReader Reader = cmd.ExecuteReader();
+            var Items = new List<AssetCategory>();
+            if (Reader.Read())
+            {
+                do
+                {
+                    try
+                    {
+                        AssetCategory AssetCatModal = new AssetCategory();
+                        AssetCatModal.Id = Convert.ToInt32(Reader["Id"]);
+                        AssetCatModal.CreatedId = Convert.ToString(Reader["CreatedId"]);
+                        AssetCatModal.CreatedTime = Convert.ToDateTime(Reader["CreatedTime"]);
+                        AssetCatModal.DeletedId = Convert.ToString(Reader["DeletedId"]);
+                        AssetCatModal.IsDeleted = Convert.ToBoolean(Reader["IsDeleted"]);
+                        AssetCatModal.DeletedTime = Convert.ToDateTime(Reader["DeletedTime"]);
+                        AssetCatModal.Name = Convert.ToString(Reader["Name"]);
+                        Items.Add(AssetCatModal);
+                    }
+                    catch
+                    {
+
+                    }
+                } while (Reader.Read());
+            }
+            _dbConnection.Close();
+            return Task.FromResult(Items);
         }
 
         public async Task<int> Save(AssetCategory assetCategory)
