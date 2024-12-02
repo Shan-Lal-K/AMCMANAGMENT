@@ -53,6 +53,16 @@ namespace AMCMANAGMENT.Controllers
             var r2 = await _assetCategoryService.Delete(Id);
             return Ok(r2);
         }
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAllAssetCategories()
+        {
+            var result = await _assetCategoryService.GetAll();
+            if (result == null)
+            {
+                return BadRequest("NO DATA FOUND");
+            }
+            return Ok(result);
+        }
 
         //// GET: api/AssetCategories/5
         //[HttpGet("{id}")]
